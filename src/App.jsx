@@ -1,7 +1,7 @@
 import './App.css';
 import useCurrencyInfo from './hooks/useCurrencyInfo';
-import InputBox from './component/InputBox';
-import { useState } from 'react';
+import { InputBox } from './component';
+import { useState, useEffect } from 'react';
 
 export default function App() {
     const [amount, setAmount] = useState(0);
@@ -9,8 +9,74 @@ export default function App() {
     const [to, setTo] = useState("inr");
     const [convertedAmount, setConvertedAmount] = useState(0);
 
-    const currencyInfo = useCurrencyInfo(from);
+    const currencyInfo = useCurrencyInfo(from);  // Fetch currency conversion rates
     const options = Object.keys(currencyInfo);
+
+    // Currency code to country name mapping
+    const currencyCountryMap = {
+        usd: 'United States',
+        inr: 'India',
+        eur: 'European Union',
+        gbp: 'United Kingdom',
+        jpy: 'Japan',
+        cad: 'Canada',
+        aud: 'Australia',
+        chf: 'Switzerland',
+        cny: 'China',
+        sek: 'Sweden',
+        nzd: 'New Zealand',
+        mxn: 'Mexico',
+        sgd: 'Singapore',
+        hkd: 'Hong Kong',
+        nok: 'Norway',
+        krw: 'South Korea',
+        try: 'Turkey',
+        rub: 'Russia',
+        zar: 'South Africa',
+        brl: 'Brazil',
+        twd: 'Taiwan',
+        dkk: 'Denmark',
+        pln: 'Poland',
+        thb: 'Thailand',
+        idr: 'Indonesia',
+        huf: 'Hungary',
+        czk: 'Czech Republic',
+        ils: 'Israel',
+        clp: 'Chile',
+        php: 'Philippines',
+        aed: 'United Arab Emirates',
+        sar: 'Saudi Arabia',
+        myr: 'Malaysia',
+        ron: 'Romania',
+        vnd: 'Vietnam',
+        egp: 'Egypt',
+        bdt: 'Bangladesh',
+        ngn: 'Nigeria',
+        pkr: 'Pakistan',
+        lkr: 'Sri Lanka',
+        ars: 'Argentina',
+        uah: 'Ukraine',
+        kes: 'Kenya',
+        cop: 'Colombia',
+        kwd: 'Kuwait',
+        qar: 'Qatar',
+        omr: 'Oman',
+        jod: 'Jordan',
+        bhd: 'Bahrain',
+        bgn: 'Bulgaria',
+        hrk: 'Croatia',
+        isk: 'Iceland',
+        mad: 'Morocco',
+        dzd: 'Algeria',
+        tnd: 'Tunisia',
+        bwp: 'Botswana',
+        ghs: 'Ghana',
+        zmw: 'Zambia',
+        mzn: 'Mozambique',
+        ugx: 'Uganda',
+        tzs: 'Tanzania',
+        // Add more currencies as necessary
+    };
 
     const swap = () => {
         setFrom(to);
@@ -20,8 +86,15 @@ export default function App() {
     };
 
     const convert = () => {
-        setConvertedAmount(amount * currencyInfo[to]);
+        if (currencyInfo[to]) {
+            setConvertedAmount(amount * currencyInfo[to]);
+        }
     };
+
+    // Run conversion when amount or currency change
+    useEffect(() => {
+        convert();
+    }, [amount, from, to, currencyInfo]);
 
     return (
         <div
@@ -37,6 +110,7 @@ export default function App() {
                         convert();
                     }}
                 >
+                    {/* Amount and Currency Selection for "From" Currency */}
                     <div className="w-full mb-1 text-black">
                         <InputBox
                             label="From"
@@ -46,8 +120,11 @@ export default function App() {
                             selectCurrency={from}
                             onAmountChange={(amount) => setAmount(amount)}
                             amountDisable={false}
+                            currencyCountryMap={currencyCountryMap}
                         />
                     </div>
+
+                    {/* Swap Button */}
                     <div className="relative w-full h-0.5 mb-4">
                         <button
                             type="button"
@@ -57,6 +134,8 @@ export default function App() {
                             Swap
                         </button>
                     </div>
+
+                    {/* Amount and Currency Selection for "To" Currency */}
                     <div className="w-full mt-1 mb-4 text-black">
                         <InputBox
                             label="To"
@@ -64,8 +143,11 @@ export default function App() {
                             currencyOption={options}
                             onCurrencyChange={(currency) => setTo(currency)}
                             selectCurrency={to}
+                            currencyCountryMap={currencyCountryMap}
                         />
                     </div>
+
+                    {/* Convert Button */}
                     <button
                         type="submit"
                         className="w-full bg-blue-600 text-white px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base md:text-lg"
